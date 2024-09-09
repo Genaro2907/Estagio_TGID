@@ -60,7 +60,7 @@ public class Programa {
 
 				switch (operacoes) {
 				case 1:
-					System.out.print("Digite o valor para saque: R$");
+					System.out.print("Digite o valor para saque: R$ ");
 					try {
 						double valorSaque = Double.parseDouble(sc.nextLine());
 						if (cliente.sacar(empresa, valorSaque)) {
@@ -75,7 +75,7 @@ public class Programa {
 					}
 					break;
 				case 2:
-					System.out.print("Digite o valor para depósito: R$");
+					System.out.print("Digite o valor para depósito: R$ ");
 					try {
 						double valorDeposito = Double.parseDouble(sc.nextLine());
 						if (cliente.depositar(empresa, valorDeposito)) {
@@ -90,7 +90,7 @@ public class Programa {
 					}
 					break;
 				case 3:
-					System.out.println("O saldo atual da sua conta: " + String.format("%.2f", cliente.getSaldo()));
+					System.out.println("O saldo atual da sua conta: R$ " + String.format("%.2f", cliente.getSaldo()));
 					break;
 				case 4:
 					continuar = false;

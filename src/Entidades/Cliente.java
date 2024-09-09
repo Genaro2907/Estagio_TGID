@@ -53,7 +53,7 @@ public class Cliente extends Usuario {
     }
 
     private String removeFormatacao(String documento) {
-        return documento.replaceAll("[^0-9]-", "");
+        return documento.replaceAll("[^0-9]", "");
     }
 
     private boolean validaDigito(String cpfParcial, int[] multiplicadores, char digitoVerificador) {
