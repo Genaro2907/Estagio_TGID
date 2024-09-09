@@ -1,43 +1,56 @@
 package Entidades;
 
+import Entities.exception.InsufficientFundsException;
+
 public class Cliente extends Usuario {
+    private Double saldo;
 
-	private Double saldo = 0.0;
+    public Cliente() {
+        this.saldo = 0.0;
+    }
 
-	public Cliente() {
-	}
+    public Cliente(String nome, String documento) throws IllegalArgumentException {
+        super(nome, documento);
+        if (!validarDocumento(documento)) {
+            throw new IllegalArgumentException("CPF inválido");
+        }
+        this.saldo = 0.0;
+    }
 
-	public Cliente(String nome, String documento) {
-		super(nome, documento);
-		this.saldo = 0.0;
-	}
+    public void depositar(Empresa empresa, double valor) throws IllegalArgumentException {
+        if (valor <= 0) {
+            throw new IllegalArgumentException("Valor do depósito deve ser positivo");
+        }
+        this.saldo += valor;
+        empresa.receberDeposito(valor);
+    }
 
-	public boolean depositar(Empresa empresa, double valor) {
-		if (valor > 0) {
-			this.saldo += valor;
-			empresa.receberDeposito(valor);
-			return true;
-		}
-		return false;
-	}
+    public void sacar(Empresa empresa, double valor) throws IllegalArgumentException, InsufficientFundsException {
+        if (valor <= 0) {
+            throw new IllegalArgumentException("Valor do saque deve ser positivo");
+        }
+        if (valor > this.saldo) {
+            throw new InsufficientFundsException("Saldo insuficiente para realizar o saque");
+        }
+        if (empresa.realizarSaque(valor)) {
+            this.saldo -= valor;
+        } else {
+            throw new RuntimeException("Não foi possível realizar o saque na empresa");
+        }
+    }
 
-	public boolean sacar(Empresa empresa, double valor) {
-		if (valor > 0 && valor <= this.saldo && empresa.realizarSaque(valor)) {
-			this.saldo -= valor;
-			return true;
-		}
-		return false;
-	}
+    public double getSaldo() {
+        return this.saldo;
+    }
 
-	public double getSaldo() {
-		return this.saldo;
-	}
-
-	@Override
+    @Override
     public boolean validarDocumento(String cpf) {
-		if (!cpf.matches("\\d{3}\\.\\d{3}\\.\\d{3}-\\d{2}")) {
-	        return false;
-	    }
+        if (cpf == null || cpf.trim().isEmpty()) {
+            return false;
+        }
+        if (!cpf.matches("\\d{3}\\.\\d{3}\\.\\d{3}-\\d{2}")) {
+            return false;
+        }
         cpf = removeFormatacao(cpf);
 
         if (cpf.length() != 11 || cpf.matches("(\\d)\\1{10}")) {
@@ -52,11 +65,11 @@ public class Cliente extends Usuario {
             && validaDigito(cpf.substring(0, 10), multiplicadores2, cpf.charAt(10));
     }
 
-    private String removeFormatacao(String documento) {
+    private static String removeFormatacao(String documento) {
         return documento.replaceAll("[^0-9]", "");
     }
 
-    private boolean validaDigito(String cpfParcial, int[] multiplicadores, char digitoVerificador) {
+    private static boolean validaDigito(String cpfParcial, int[] multiplicadores, char digitoVerificador) {
         int soma = 0;
         for (int i = 0; i < cpfParcial.length(); i++) {
             soma += Character.getNumericValue(cpfParcial.charAt(i)) * multiplicadores[i];
@@ -66,3 +79,4 @@ public class Cliente extends Usuario {
         return Character.getNumericValue(digitoVerificador) == digito;
     }
 }
+
